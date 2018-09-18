@@ -123,7 +123,6 @@ class ContactData extends Component {
         if (rules.maxLength) {
             isValid = value.length <= rules.maxLength && isValid;
         }
-
         return isValid;
     }
 
@@ -162,9 +161,9 @@ class ContactData extends Component {
         let form = ( 
             <form onSubmit={this.orderHandler} >
                     {formElementArray.map(formElement => (
-                    <Input elementType={formElement.config.elementType} 
+                    <Input key={formElement.id} 
+                            elementType={formElement.config.elementType}     
                             elementConfig={formElement.config.elementConfig} 
-                            key={formElement.id}
                             invalid={!formElement.config.valid}
                             shouldValidate={formElement.config.validation}
                             touched = {formElement.config.touched}
