@@ -75,8 +75,18 @@ class Auth extends Component {
     }
 
     submitHandler = (event) => {
+        const updatedControls = {
+            ...this.state.controls,
+            email: {
+                value: ''
+            },
+            password: {
+                value: ''
+            }
+        };
         event.preventDefault();
         this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value, this.state.isSignUp)
+        this.setState({ controls: updatedControls })
     }
 
     swithAuthHandler = (event) => {
@@ -121,7 +131,7 @@ class Auth extends Component {
     return (
       <div className={classes.Auth}>
             {errorMsg}
-        <form onSubmit={this.submitHandler}>
+            <form onSubmit={this.submitHandler}>
                 {form}
                 <Button btnType="Success">SUBMIT</Button>
                 <Button clicked={this.swithAuthHandler}
