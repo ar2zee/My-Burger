@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import {Redirect} from 'react-router-dom';
 
 import Input from '../../components/UI/Input/Input';
 import Button from '../../components/UI/Button/Button';
@@ -42,6 +43,12 @@ class Auth extends Component {
         isSignUp: true
     }
 
+    componentDidMount() {
+        if(!this.props.buildingBurger && this.props.authRedirectPath !== '/') {
+            this.props.onSetAuthRedirectPath();
+        }
+    }
+
     checkValidity = (value, rules) => {
         let isValid = true;
 
@@ -75,18 +82,18 @@ class Auth extends Component {
     }
 
     submitHandler = (event) => {
-        const updatedControls = {
-            ...this.state.controls,
-            email: {
-                value: ''
-            },
-            password: {
-                value: ''
-            }
-        };
+        // const updatedControls = {
+        //     ...this.state.controls,
+        //     email: {
+        //         value: ''
+        //     },
+        //     password: {
+        //         value: ''
+        //     }
+        // };
         event.preventDefault();
         this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value, this.state.isSignUp)
-        this.setState({ controls: updatedControls })
+        // this.setState({ controls: updatedControls })
     }
 
     swithAuthHandler = (event) => {
@@ -95,6 +102,8 @@ class Auth extends Component {
             return { isSignUp: !prevState.isSignUp}
         })
     }
+
+    
 
   render() {
 
@@ -127,16 +136,21 @@ class Auth extends Component {
           errorMsg = (<p>{this.props.error.message}</p>)
       }
 
+        let authRedirect = null;
+            if (this.props.isAuthenticated) { 
+                authRedirect = <Redirect to={this.props.authRedirectPath} />
+      }
 
     return (
       <div className={classes.Auth}>
+            {authRedirect}
             {errorMsg}
             <form onSubmit={this.submitHandler}>
                 {form}
                 <Button btnType="Success">SUBMIT</Button>
+                </form>
                 <Button clicked={this.swithAuthHandler}
                 btnType="Danger">SWITCH TO {this.state.isSignUp ? 'SIGNIN' : 'SIGNUP'}</Button>
-        </form>
       </div>
     )
   }
@@ -146,12 +160,16 @@ const mapDispatchToProps = state => {
     return {
         loading: state.auth.loading,
         error: state.auth.error,
+        isAuthenticated: state.auth.token !== null,
+        buildingBurger: state.burgerBuilder.building,
+        authRedirectPath: state.auth.authRedirectPath
     }
 }
 
 const mapStateToProps = dispatch => {
     return {
-        onAuth: (email, password, isSignUp) => dispatch(actions.auth(email, password, isSignUp))
+        onAuth: (email, password, isSignUp) => dispatch(actions.auth(email, password, isSignUp)),
+        onSetAuthRedirectPath: () => dispatch(actions.setAuthRedirectPath('/'))
     }
 }
 
